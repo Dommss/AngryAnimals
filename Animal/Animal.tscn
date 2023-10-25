@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=3 uid="uid://btuq05jfvthni"]
+
+[ext_resource type="Script" path="res://Animal/Animal.cs" id="1_6sno0"]
+[ext_resource type="Texture2D" uid="uid://c1lu7rfafuvyy" path="res://Assets/Player/parrot.png" id="1_avvau"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_t7cp7"]
+bounce = 0.2
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rf7m0"]
+radius = 19.0263
+
+[node name="Animal" type="RigidBody2D"]
+physics_material_override = SubResource("PhysicsMaterial_t7cp7")
+script = ExtResource("1_6sno0")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("1_avvau")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_rf7m0")
