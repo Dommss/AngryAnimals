@@ -12,6 +12,7 @@ public partial class Animal : RigidBody2D {
         _notifier = GetNode<VisibleOnScreenNotifier2D>("VisibleOnScreenNotifier2D");
 
         _notifier.ScreenExited += OnScreenExited;
+        InputEvent += OnInputEvent;
     }
 
     public override void _PhysicsProcess(double delta) {
@@ -20,6 +21,7 @@ public partial class Animal : RigidBody2D {
 
     public override void _ExitTree() {
         _notifier.ScreenExited -= OnScreenExited;
+        InputEvent -= OnInputEvent;
     }
 
     private void UpdateDebugLabel() {
@@ -29,6 +31,12 @@ public partial class Animal : RigidBody2D {
         s += "linear: " + Utilities.VectorToString(LinearVelocity);
 
         _signalManager.EmitSignal(SignalManager.SignalName.UpdateDebugLabel, s);
+    }
+
+    private void OnInputEvent(Node viewport, InputEvent @event, long shapeIdx) {
+        if (@event.IsActionPressed("Drag")) {
+         GD.Print(@event); 
+        }
     }
 
     private void Die() {

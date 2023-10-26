@@ -10,7 +10,9 @@ bounce = 0.2
 radius = 19.0263
 
 [node name="Animal" type="RigidBody2D"]
+input_pickable = true
 physics_material_override = SubResource("PhysicsMaterial_t7cp7")
+freeze = true
 script = ExtResource("1_6sno0")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
