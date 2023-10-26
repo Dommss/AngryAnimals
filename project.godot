@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 SignalManager="*res://Singletons/SignalManager.cs"
+GameManager="*res://Singletons/GameManager.cs"
 
 [display]
 

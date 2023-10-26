@@ -2,14 +2,18 @@ using Godot;
 
 public partial class Animal : RigidBody2D {
     private SignalManager _signalManager;
+    private GameManager _gameManager;
 
     private VisibleOnScreenNotifier2D _notifier;
     private AudioStreamPlayer2D _stretchSound;
     private AudioStreamPlayer2D _launchSound;
+    private AudioStreamPlayer2D _collSound;
 
     private readonly Vector2 _dragLimMax = new(0, 60);
     private readonly Vector2 _dragLimMin = new(-60, 0);
     private readonly float _impulseMultiplication = 20f;
+    private readonly float _fireDelay = 0.25f;
+    private readonly float _hasStopped = 0.1f;
     
     private bool _isDead;
     private bool _isDragging;
@@ -20,12 +24,16 @@ public partial class Animal : RigidBody2D {
     private Vector2 _lastDraggedPos = Vector2.Zero;
     private float _lastDraggedAmount;
     private float _firedTime;
+    private int _lastCollCount;
+    
     public override void _Ready() {
         _signalManager = GetNode<SignalManager>("/root/SignalManager");
+        _gameManager = GetNode<GameManager>("/root/GameManager");
 
         _notifier = GetNode<VisibleOnScreenNotifier2D>("VisibleOnScreenNotifier2D");
         _stretchSound = GetNode<AudioStreamPlayer2D>("StretchSound");
         _launchSound = GetNode<AudioStreamPlayer2D>("LaunchSound");
+        _collSound = GetNode<AudioStreamPlayer2D>("CollSound");
         
         _start = GlobalPosition;
         
@@ -36,8 +44,13 @@ public partial class Animal : RigidBody2D {
     public override void _PhysicsProcess(double delta) {
         UpdateDebugLabel();
 
-        if (_isReleased) return;
-        else {
+        if (_isReleased) {
+            _firedTime += (float)delta;
+            if (_firedTime > _fireDelay) {
+                PlayColl();
+                CheckOnTarget();
+            }
+        } else {
             if (!_isDragging) return;
             else {
                 if (Input.IsActionJustReleased("Drag")) {
@@ -56,7 +69,7 @@ public partial class Animal : RigidBody2D {
     }
 
     private void UpdateDebugLabel() {
-        var s = "g_pos: " + Utilities.VectorToString(GlobalPosition) + "\n";
+        var s = "g_pos: " + Utilities.VectorToString(GlobalPosition) + " - contacts: " + GetContactCount() + "\n";
 
         s += "ang: " + AngularVelocity.ToString("F1") + " - linear: " + Utilities.VectorToString(LinearVelocity) + "\n";
         s += "dragging: " + _isDragging + " - released: " + _isReleased + " - firedTime: " + _firedTime + "\n";
@@ -66,6 +79,36 @@ public partial class Animal : RigidBody2D {
              _lastDraggedAmount;
             
         _signalManager.EmitSignal(SignalManager.SignalName.UpdateDebugLabel, s);
+    }
+
+    private bool StoppedRolling() {
+        if (GetContactCount() > 0) {
+            if (Mathf.Abs(LinearVelocity.Y) < _hasStopped && Mathf.Abs(AngularVelocity) < _hasStopped) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void CheckOnTarget() {
+        if (!StoppedRolling()) return;
+
+        var cb = GetCollidingBodies();
+        if (cb.Count == 0) return;
+
+        if (cb[0].IsInGroup(_gameManager.GroupCup)) {
+            GD.Print("Cup Died!");
+            Die();
+        }
+    }
+
+    private void PlayColl() {
+        if (_lastCollCount == 0 && GetContactCount() > 0 && !_collSound.Playing) {
+            _collSound.Play();
+        }
+
+        _lastCollCount = GetContactCount();
     }
 
     private void GrabIt() {
