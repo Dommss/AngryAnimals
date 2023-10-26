@@ -1,10 +1,15 @@
+using System;
 using Godot;
 
 public partial class Animal : RigidBody2D {
     private SignalManager _signalManager;
 
     private VisibleOnScreenNotifier2D _notifier;
+    private AudioStreamPlayer2D _stretchSound;
 
+    private readonly Vector2 _dragLimMax = new Vector2(0, 60);
+    private readonly Vector2 _dragLimMin = new Vector2(-60, 0);
+    
     private bool _isDead = false;
     private bool _isDragging = false;
     private bool _isReleased = false;
@@ -18,7 +23,8 @@ public partial class Animal : RigidBody2D {
         _signalManager = GetNode<SignalManager>("/root/SignalManager");
 
         _notifier = GetNode<VisibleOnScreenNotifier2D>("VisibleOnScreenNotifier2D");
-
+        _stretchSound = GetNode<AudioStreamPlayer2D>("StretchSound");
+        
         _start = GlobalPosition;
         
         _notifier.ScreenExited += OnScreenExited;
@@ -66,7 +72,14 @@ public partial class Animal : RigidBody2D {
         _lastDraggedAmount = (_lastDraggedPos - gmp).Length();
         _lastDraggedPos = gmp;
 
+        if (_lastDraggedAmount > 0 && !_stretchSound.Playing) {
+            _stretchSound.Play();
+        }
+
         _draggedVector = gmp - _dragStart;
+        _draggedVector.X = Mathf.Clamp(_draggedVector.X, _dragLimMin.X, _dragLimMax.X);
+        _draggedVector.Y = Mathf.Clamp(_draggedVector.Y, _dragLimMin.Y, _dragLimMax.Y);
+        
         GlobalPosition = _start + _draggedVector;
     }
 
