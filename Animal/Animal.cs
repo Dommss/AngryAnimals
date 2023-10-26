@@ -1,4 +1,3 @@
-using System;
 using Godot;
 
 public partial class Animal : RigidBody2D {
@@ -6,24 +5,27 @@ public partial class Animal : RigidBody2D {
 
     private VisibleOnScreenNotifier2D _notifier;
     private AudioStreamPlayer2D _stretchSound;
+    private AudioStreamPlayer2D _launchSound;
 
-    private readonly Vector2 _dragLimMax = new Vector2(0, 60);
-    private readonly Vector2 _dragLimMin = new Vector2(-60, 0);
+    private readonly Vector2 _dragLimMax = new(0, 60);
+    private readonly Vector2 _dragLimMin = new(-60, 0);
+    private readonly float _impulseMultiplication = 20f;
     
-    private bool _isDead = false;
-    private bool _isDragging = false;
-    private bool _isReleased = false;
+    private bool _isDead;
+    private bool _isDragging;
+    private bool _isReleased;
     private Vector2 _start = Vector2.Zero;
     private Vector2 _dragStart = Vector2.Zero;
     private Vector2 _draggedVector = Vector2.Zero;
     private Vector2 _lastDraggedPos = Vector2.Zero;
-    private float _lastDraggedAmount = 0f;
-    private float _firedTime = 0f;
+    private float _lastDraggedAmount;
+    private float _firedTime;
     public override void _Ready() {
         _signalManager = GetNode<SignalManager>("/root/SignalManager");
 
         _notifier = GetNode<VisibleOnScreenNotifier2D>("VisibleOnScreenNotifier2D");
         _stretchSound = GetNode<AudioStreamPlayer2D>("StretchSound");
+        _launchSound = GetNode<AudioStreamPlayer2D>("LaunchSound");
         
         _start = GlobalPosition;
         
@@ -38,7 +40,12 @@ public partial class Animal : RigidBody2D {
         else {
             if (!_isDragging) return;
             else {
-                DragIt();
+                if (Input.IsActionJustReleased("Drag")) {
+                    ReleaseIt();
+                }
+                else {
+                    DragIt();
+                }
             }
         }
     }
@@ -81,6 +88,20 @@ public partial class Animal : RigidBody2D {
         _draggedVector.Y = Mathf.Clamp(_draggedVector.Y, _dragLimMin.Y, _dragLimMax.Y);
         
         GlobalPosition = _start + _draggedVector;
+    }
+
+    private void ReleaseIt() {
+        _isDragging = false;
+        _isReleased = true;
+        Freeze = false;
+        
+        ApplyCentralImpulse(GetImpulse());
+        _stretchSound.Stop();
+        _launchSound.Play();
+    }
+
+    private Vector2 GetImpulse() {
+        return _draggedVector * -1 * _impulseMultiplication;
     }
 
     private void OnInputEvent(Node viewport, InputEvent @event, long shapeIdx) {
