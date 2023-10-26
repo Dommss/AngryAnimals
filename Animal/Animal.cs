@@ -27,6 +27,14 @@ public partial class Animal : RigidBody2D {
 
     public override void _PhysicsProcess(double delta) {
         UpdateDebugLabel();
+
+        if (_isReleased) return;
+        else {
+            if (!_isDragging) return;
+            else {
+                DragIt();
+            }
+        }
     }
 
     public override void _ExitTree() {
@@ -39,7 +47,8 @@ public partial class Animal : RigidBody2D {
 
         s += "ang: " + AngularVelocity.ToString("F1") + " - linear: " + Utilities.VectorToString(LinearVelocity) + "\n";
         s += "dragging: " + _isDragging + " - released: " + _isReleased + " - firedTime: " + _firedTime + "\n";
-        s += "start: " + Utilities.VectorToString(_start) + " - dragStart: " + Utilities.VectorToString(_dragStart) + "\n";
+        s += "start: " + Utilities.VectorToString(_start) + " - dragStart: " + Utilities.VectorToString(_dragStart) +
+            " - draggedVector: " + Utilities.VectorToString(_draggedVector) + "\n";
         s += "lastDraggedPos: " + Utilities.VectorToString(_lastDraggedPos) + " - lastDraggedAmount: " +
              _lastDraggedAmount;
             
@@ -50,6 +59,15 @@ public partial class Animal : RigidBody2D {
         _isDragging = true;
         _dragStart = GetGlobalMousePosition();
         _lastDraggedPos = _dragStart;
+    }
+
+    private void DragIt() {
+        var gmp = GetGlobalMousePosition();
+        _lastDraggedAmount = (_lastDraggedPos - gmp).Length();
+        _lastDraggedPos = gmp;
+
+        _draggedVector = gmp - _dragStart;
+        GlobalPosition = _start + _draggedVector;
     }
 
     private void OnInputEvent(Node viewport, InputEvent @event, long shapeIdx) {
