@@ -98,7 +98,7 @@ public partial class Animal : RigidBody2D {
         if (cb.Count == 0) return;
 
         if (cb[0].IsInGroup(_gameManager.GroupCup)) {
-            GD.Print("Cup Died!");
+            cb[0].Call("Die");
             Die();
         }
     }

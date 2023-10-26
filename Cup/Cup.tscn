@@ -1,9 +1,49 @@
-[gd_scene load_steps=3 format=3 uid="uid://cvvgja4o2t5w6"]
+[gd_scene load_steps=8 format=3 uid="uid://cvvgja4o2t5w6"]
 
+[ext_resource type="Script" path="res://Cup/Cup.cs" id="1_327fd"]
 [ext_resource type="Texture2D" uid="uid://dgvwlhj8g6j4m" path="res://Assets/Env/elementWood004.png" id="1_01074"]
 [ext_resource type="Texture2D" uid="uid://bp21ycfmg1dph" path="res://Assets/Env/elementWood015.png" id="2_h7d27"]
+[ext_resource type="AudioStream" uid="uid://d4gr3iib7756o" path="res://Assets/Audio/vanish.wav" id="4_uubhj"]
+
+[sub_resource type="Animation" id="Animation_rpnfk"]
+resource_name = "Vanish"
+length = 0.8
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0.5, 0.5), Vector2(1, 1), Vector2(2.08165e-12, 2.08165e-12)]
+}
+
+[sub_resource type="Animation" id="Animation_8x0qi"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.5, 0.5)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_q3fea"]
+_data = {
+"RESET": SubResource("Animation_8x0qi"),
+"Vanish": SubResource("Animation_rpnfk")
+}
 
 [node name="Cup" type="StaticBody2D" groups=["Cup"]]
+script = ExtResource("1_327fd")
 
 [node name="Sprites" type="Node2D" parent="."]
 scale = Vector2(0.5, 0.5)
@@ -22,3 +62,11 @@ texture = ExtResource("2_h7d27")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(-53, -50, -53, 16, 53, 16, 53, -49, 21, -17, -20, -17)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_q3fea")
+}
+
+[node name="VanishSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_uubhj")

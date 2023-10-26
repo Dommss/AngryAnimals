@@ -13,7 +13,10 @@ scale = Vector2(1.2, 1.2)
 texture = ExtResource("1_75etx")
 
 [node name="Cup" parent="." instance=ExtResource("2_ilwls")]
-position = Vector2(208, 472)
+position = Vector2(404, 518)
+
+[node name="Cup2" parent="." instance=ExtResource("2_ilwls")]
+position = Vector2(627, 461)
 
 [node name="DebugLabel" type="Label" parent="."]
 offset_left = 24.0
