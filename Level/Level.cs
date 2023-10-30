@@ -1,6 +1,7 @@
 using Godot;
 
 public partial class Level : Node2D {
+    private GameManager _gameManager;
     private SignalManager _signalManager;
 
     private PackedScene _animalScene = GD.Load<PackedScene>("res://Animal/Animal.tscn");
@@ -9,6 +10,7 @@ public partial class Level : Node2D {
     private Marker2D _animalStart;
 
     public override void _Ready() {
+        _gameManager = GetNode<GameManager>("/root/GameManager");
         _signalManager = GetNode<SignalManager>("/root/SignalManager");
 
         _debugLabel = GetNode<Label>("DebugLabel");
@@ -18,6 +20,12 @@ public partial class Level : Node2D {
         _signalManager.AnimalDied += OnAnimalDied;
         
         OnAnimalDied();
+    }
+
+    public override void _Process(double delta) {
+        if (Input.IsKeyPressed(Key.Q)) {
+            _gameManager.LoadMainScene();
+        }
     }
 
     public override void _ExitTree() {

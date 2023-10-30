@@ -6,6 +6,7 @@ public partial class LevelButton : TextureButton {
 
     private Label _levelLabel;
     private Label _scoreLabel;
+    private PackedScene _levelScene;
 
     private readonly Vector2 _hoverScale = new(1.1f, 1.1f);
     private readonly Vector2 _defaultScale = new(1f, 1f);
@@ -19,6 +20,7 @@ public partial class LevelButton : TextureButton {
         MouseExited += OnMouseExited;
 
         _levelLabel.Text = _levelNumber.ToString();
+        _levelScene = GD.Load<PackedScene>("res://Level/Level" + _levelNumber + ".tscn");
     }
 
     public override void _ExitTree() {
@@ -34,6 +36,6 @@ public partial class LevelButton : TextureButton {
     }
 
     private void OnPressed() {
-        
+        GetTree().ChangeSceneToPacked(_levelScene);
     }
 }
