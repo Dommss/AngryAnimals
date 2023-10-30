@@ -16,6 +16,7 @@ scale = Vector2(1.2, 1.2)
 texture = ExtResource("1_75etx")
 
 [node name="DebugLabel" type="Label" parent="."]
+visible = false
 offset_left = 24.0
 offset_top = 24.0
 offset_right = 424.0

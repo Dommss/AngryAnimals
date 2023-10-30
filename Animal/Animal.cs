@@ -9,10 +9,12 @@ public partial class Animal : RigidBody2D {
     private AudioStreamPlayer2D _stretchSound;
     private AudioStreamPlayer2D _launchSound;
     private AudioStreamPlayer2D _collSound;
+    private Sprite2D _arrowSprite;
 
     private readonly Vector2 _dragLimMax = new(0, 60);
     private readonly Vector2 _dragLimMin = new(-60, 0);
     private readonly float _impulseMultiplication = 20f;
+    private readonly float _impulseMax = 1200f;
     private readonly float _fireDelay = 0.25f;
     private readonly float _hasStopped = 0.1f;
     
@@ -25,6 +27,7 @@ public partial class Animal : RigidBody2D {
     private Vector2 _lastDraggedPos = Vector2.Zero;
     private float _lastDraggedAmount;
     private float _firedTime;
+    private float _arrowScaleX;
     private int _lastCollCount;
     
     public override void _Ready() {
@@ -36,8 +39,11 @@ public partial class Animal : RigidBody2D {
         _stretchSound = GetNode<AudioStreamPlayer2D>("StretchSound");
         _launchSound = GetNode<AudioStreamPlayer2D>("LaunchSound");
         _collSound = GetNode<AudioStreamPlayer2D>("CollSound");
+        _arrowSprite = GetNode<Sprite2D>("ArrowSprite");
         
         _start = GlobalPosition;
+        _arrowScaleX = _arrowSprite.Scale.X;
+        _arrowSprite.Hide();
         
         _notifier.ScreenExited += OnScreenExited;
         InputEvent += OnInputEvent;
@@ -83,6 +89,16 @@ public partial class Animal : RigidBody2D {
         _signalManager.EmitSignal(SignalManager.SignalName.UpdateDebugLabel, s);
     }
 
+    private void ScaleArrow() {
+        var impLength = GetImpulse().Length();
+        var perc = impLength / _impulseMax;
+
+        var spriteScale = _arrowSprite.Scale;
+        spriteScale.X = (_arrowScaleX * perc) + _arrowScaleX;
+        _arrowSprite.Scale = spriteScale;
+        _arrowSprite.Rotation = (_start - GlobalPosition).Angle();
+    }
+
     private bool StoppedRolling() {
         if (GetContactCount() > 0) {
             if (Mathf.Abs(LinearVelocity.Y) < _hasStopped && Mathf.Abs(AngularVelocity) < _hasStopped) {
@@ -117,6 +133,7 @@ public partial class Animal : RigidBody2D {
         _isDragging = true;
         _dragStart = GetGlobalMousePosition();
         _lastDraggedPos = _dragStart;
+        _arrowSprite.Show();
     }
 
     private void DragIt() {
@@ -133,6 +150,7 @@ public partial class Animal : RigidBody2D {
         _draggedVector.Y = Mathf.Clamp(_draggedVector.Y, _dragLimMin.Y, _dragLimMax.Y);
         
         GlobalPosition = _start + _draggedVector;
+        ScaleArrow();
     }
 
     private void ReleaseIt() {
@@ -144,6 +162,7 @@ public partial class Animal : RigidBody2D {
         _stretchSound.Stop();
         _launchSound.Play();
         _scoreManager.AttemptMade();
+        _arrowSprite.Hide();
     }
 
     private Vector2 GetImpulse() {
