@@ -8,6 +8,10 @@ public partial class Water : Area2D {
         BodyEntered += OnBodyEntered;
     }
 
+    public override void _ExitTree() {
+        BodyEntered -= OnBodyEntered;
+    }
+
     private void OnBodyEntered(Node2D body) {
         if (body.IsInGroup("Animal")) {
             _splashSound.Play();
