@@ -3,6 +3,7 @@ using Godot;
 public partial class Animal : RigidBody2D {
     private SignalManager _signalManager;
     private GameManager _gameManager;
+    private ScoreManager _scoreManager;
 
     private VisibleOnScreenNotifier2D _notifier;
     private AudioStreamPlayer2D _stretchSound;
@@ -29,6 +30,7 @@ public partial class Animal : RigidBody2D {
     public override void _Ready() {
         _signalManager = GetNode<SignalManager>("/root/SignalManager");
         _gameManager = GetNode<GameManager>("/root/GameManager");
+        _scoreManager = GetNode<ScoreManager>("/root/ScoreManager");
 
         _notifier = GetNode<VisibleOnScreenNotifier2D>("VisibleOnScreenNotifier2D");
         _stretchSound = GetNode<AudioStreamPlayer2D>("StretchSound");
@@ -141,6 +143,7 @@ public partial class Animal : RigidBody2D {
         ApplyCentralImpulse(GetImpulse());
         _stretchSound.Stop();
         _launchSound.Play();
+        _scoreManager.AttemptMade();
     }
 
     private Vector2 GetImpulse() {

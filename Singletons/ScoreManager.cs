@@ -55,7 +55,27 @@ public partial class ScoreManager : Node {
         GD.Print("SetTargetCups: " + _targetCups);
     }
 
+    public void AttemptMade() {
+        _attempts++;
+        GD.Print(_targetCups, _attempts, _cupsHit);
+        _signalManager.EmitSignal(SignalManager.SignalName.AttemptMade);
+    }
+
+    public void CheckGameOver() {
+        if (_cupsHit >= _targetCups) {
+            GD.Print("GAME OVER - " + _levelScores);
+            _signalManager.EmitSignal(SignalManager.SignalName.GameOver);
+            var scoreToCheck = _levelScores;
+            if ((int)scoreToCheck[_levelSelected] > _attempts) {
+                _levelScores[_levelSelected] = _attempts;
+                GD.Print("Record set: " + _levelScores);
+            }
+        }
+    }
+
     private void OnCupDestroyed() {
         _cupsHit++;
+        GD.Print(_targetCups, _attempts, _cupsHit);
+        CheckGameOver();
     }
 }
