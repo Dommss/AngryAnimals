@@ -34,12 +34,15 @@ scale = Vector2(2.1, 2.1)
 
 [node name="StretchSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3_8dmyx")
+volume_db = -10.0
 
 [node name="LaunchSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("4_gng6x")
+volume_db = -10.0
 
 [node name="CollSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("5_ax2h7")
+volume_db = -10.0
 
 [node name="ArrowSprite" type="Sprite2D" parent="."]
 scale = Vector2(0.3, 0.3)

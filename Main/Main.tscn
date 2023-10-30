@@ -25,6 +25,7 @@ expand_mode = 3
 
 [node name="BirdSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_1iwv0")
+volume_db = -15.0
 autoplay = true
 
 [node name="MC" type="MarginContainer" parent="."]

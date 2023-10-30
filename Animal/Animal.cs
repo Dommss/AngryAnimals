@@ -11,10 +11,10 @@ public partial class Animal : RigidBody2D {
     private AudioStreamPlayer2D _collSound;
     private Sprite2D _arrowSprite;
 
-    private readonly Vector2 _dragLimMax = new(0, 60);
-    private readonly Vector2 _dragLimMin = new(-60, 0);
-    private readonly float _impulseMultiplication = 20f;
-    private readonly float _impulseMax = 1200f;
+    private readonly Vector2 _dragLimMax = new(0, 100);
+    private readonly Vector2 _dragLimMin = new(-100, 0);
+    private readonly float _impulseMultiplication = 10f;
+    private readonly float _impulseMax = 2000f;
     private readonly float _fireDelay = 0.25f;
     private readonly float _hasStopped = 0.1f;
     
